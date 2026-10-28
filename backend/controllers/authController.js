@@ -1,7 +1,7 @@
 import User from '../models/User';
 import Employee from '../models/Employee';
 import bcrypt from 'bcryptjs';
-import {sendOtpEmail} from "../config/brevo.js";
+import {sendOtpEmail, sendResetOtpEmail} from "../config/brevo.js";
 import jwt from 'jsonwebtoken';
 
 // to sign up an admin
@@ -155,7 +155,7 @@ export const verifyOtp = async (req, res) => {
 // to resend the otp
 export const resendOtp = async (req, res) => {
     try {
-        const { email } req.body;
+        const { email } = req.body;
 
         if (!email) {
             return res.status(400).json({
@@ -164,6 +164,7 @@ export const resendOtp = async (req, res) => {
         }
 
         const user = await User.findOne({ email });
+
         if (!user) {
             return res.status(400).json({
                 message: "Invalid email or password",
@@ -194,6 +195,99 @@ export const resendOtp = async (req, res) => {
         })
     } catch (e) {
         console.error("Resend OTP Error: ", e);
+        res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
+// for forgot password
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                message: "Email is required",
+            })
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                message: "Invalid email or password",
+            })
+        }
+
+        // to generate 6 digits OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
+
+        user.resetPasswordOtp = otp;
+        user.resetPasswordOtpExpires = otpExpires;
+
+        await user.save();
+
+        sendResetOtpEmail(email, otp, user.name).catch((err) => {
+            console.error("Error resending the OTP email: ", err)
+        })
+
+        res.status(200).json({
+            message: "Password reset OTP sent successfully to your email."
+        });
+    } catch (e) {
+        console.error("Forgot Password Error: ", e);
+        res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
+// to reset the password
+export const resetPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({
+                message: "Email, OTP and new password are required."
+            })
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                message: "Invalid email or password",
+            })
+        }
+
+        if (user.resetPasswordOtp !== otp) {
+            return res.status(400).json({
+                message: "Invalid OTP",
+            })
+        }
+
+        if (new Date() > user.resetPasswordOtpExpires) {
+            return res.status(400).json({
+                message: "OTP code has been expired. Please request a new one.",
+            })
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        user.password = hashedPassword;
+        user.resetPasswordOtp = null;
+        user.resetPasswordOtpExpires = null;
+
+        await user.save();
+
+        res.status(200).json({
+            message: "Password reset OTP sent successfully to your email."
+        })
+    } catch (e) {
+        console.error("Reset Password Error: ", e);
         res.status(500).json({
             message: "Internal server error",
         });

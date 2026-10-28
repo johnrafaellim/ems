@@ -1,5 +1,5 @@
-import User from '../models/User';
-import Employee from '../models/Employee';
+import User from '../models/User.js';
+import Employee from '../models/Employee.js';
 import bcrypt from 'bcryptjs';
 import {sendOtpEmail, sendResetOtpEmail} from "../config/brevo.js";
 import jwt from 'jsonwebtoken';
@@ -60,7 +60,7 @@ export const login = async (req, res) => {
 
         if (!user.isVerified) {
             return res.status(400).json({
-                message: "Your account is not verified. Please verify your email.
+                message: "Your account is not verified. Please verify your email.",
                 isVerified: false,
                 email: user.email
             })
@@ -275,7 +275,8 @@ export const resetPassword = async (req, res) => {
             })
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // to hash password
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
 
         user.password = hashedPassword;
         user.resetPasswordOtp = null;

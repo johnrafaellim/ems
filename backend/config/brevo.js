@@ -19,7 +19,7 @@ const sendEmail = async (options) => {
                 email: options.email
             }],
             subject: options.subject,
-            htmlContent: options.mesage
+            htmlContent: options.message
         }
 
         const response = await fetch("https://api.brevo.com/v3/smtp/email", {

@@ -163,3 +163,5 @@ sketch
 # Frontend environment variables
 /frontend/.env
 /frontend/.env.*
+
+.idea/prettier.xml

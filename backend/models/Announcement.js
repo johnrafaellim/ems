@@ -1,40 +1,40 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 
 const AnnouncementSchema = new mongoose.Schema({
-    title:{
-        type:String,
-        required: true,
-        trim:true
-    },
-    message:{
-        type: String,
-        required: true,
-        trim:true
-    },
-    sendTo:{
-        type:String,
-        required:true,
-        enum:["All","Employee"],
-        default:"All",
-    },
-    recipient:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:"Employee",
-        default: null,
-    },
-    createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required: true,
-    },
-    fromDate: {
-        type: Date,
-        default: null,
-    },
-    toDate: {
-        type: Date,
-        default: null,
-    },
-})
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  message: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  sendTo: {
+    type: String,
+    required: true,
+    enum: ['All', 'Employee'],
+    default: 'All',
+  },
+  recipient: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Employee',
+    default: null,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  fromDate: {
+    type: Date,
+    default: null,
+  },
+  toDate: {
+    type: Date,
+    default: null,
+  },
+});
 
-export default mongoose.model("Announcement", AnnouncementSchema);
+export default mongoose.model('Announcement', AnnouncementSchema);

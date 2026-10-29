@@ -1,55 +1,57 @@
-import 'dotenv/config'
+import 'dotenv/config';
 
 // to send email to that user
 const sendEmail = async (options) => {
-    try {
-        const BREVO_API_KEY = process.env.BREVO_API_KEY?.trim();
+  try {
+    const BREVO_API_KEY = process.env.BREVO_API_KEY?.trim();
 
-        if (!BREVO_API_KEY) {
-           console.error("BREVO_API_KEY environment variable missing");
-           throw new Error("BREVO_API_KEY environment variable missing");
-        }
-
-        const data = {
-            sender:{
-                name: process.env.SENDER_NAME || "EMS",
-                email: process.env.SENDER_EMAIL || "",
-            },
-            to: [{
-                email: options.email
-            }],
-            subject: options.subject,
-            htmlContent: options.message
-        }
-
-        const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-            method: "POST",
-            headers: {
-                "api-key": BREVO_API_KEY,
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            console.log("Email sent successfully via Brevo.", result.messageId);
-        } else {
-            console.error("Brevo API Error: ", result);
-            throw new Error(result.message || "Could not sent email via Brevo.");
-        }
-    } catch (e) {
-        console.error("Brevo email error: ", e.message);
-        throw new Error("Could not send email via Brevo.");
+    if (!BREVO_API_KEY) {
+      console.error('BREVO_API_KEY environment variable missing');
+      throw new Error('BREVO_API_KEY environment variable missing');
     }
-}
+
+    const data = {
+      sender: {
+        name: process.env.SENDER_NAME || 'EMS',
+        email: process.env.SENDER_EMAIL || '',
+      },
+      to: [
+        {
+          email: options.email,
+        },
+      ],
+      subject: options.subject,
+      htmlContent: options.message,
+    };
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': BREVO_API_KEY,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      console.log('Email sent successfully via Brevo.', result.messageId);
+    } else {
+      console.error('Brevo API Error: ', result);
+      throw new Error(result.message || 'Could not sent email via Brevo.');
+    }
+  } catch (e) {
+    console.error('Brevo email error: ', e.message);
+    throw new Error('Could not send email via Brevo.');
+  }
+};
 
 export default sendEmail;
 
 export const sendOtpEmail = async (email, otp, name) => {
-    const htmlContent = `
+  const htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0f2fe; border-radius: 16px; background-color: #ffffff;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <h1 style="color: #0369a1; margin: 0; font-size: 28px;">VitaCare</h1>
@@ -70,20 +72,22 @@ export const sendOtpEmail = async (email, otp, name) => {
         </div>
     `;
 
-    try {
-        await sendEmail({
-            email,
-            subject: "Verify your EMS account.",
-            message: htmlContent
-        })
-    } catch (error) {
-        console.log(`\n--- [DEVELOPMENT FALLBACK OTP LOG] ---\nRecipient: ${email} (${name})\nOTP Code: ${otp}\n---------------------------------------\n`);
-    }
+  try {
+    await sendEmail({
+      email,
+      subject: 'Verify your EMS account.',
+      message: htmlContent,
+    });
+  } catch (error) {
+    console.log(
+      `\n--- [DEVELOPMENT FALLBACK OTP LOG] ---\nRecipient: ${email} (${name})\nOTP Code: ${otp}\n---------------------------------------\n`
+    );
+  }
 };
 
 // for resend OTP
 export const sendResetOtpEmail = async (email, otp, name) => {
-    const htmlContent = `
+  const htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0f2fe; border-radius: 16px; background-color: #ffffff;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <h1 style="color: #0369a1; margin: 0; font-size: 28px;">VitaCare</h1>
@@ -104,13 +108,15 @@ export const sendResetOtpEmail = async (email, otp, name) => {
         </div>
     `;
 
-    try {
-        await sendEmail({
-            email,
-            subject: "Reset your EMS account password",
-            message: htmlContent
-        })
-    } catch (error) {
-        console.log(`\n--- [DEVELOPMENT FALLBACK RESET OTP LOG] ---\nRecipient: ${email} (${name})\nOTP Code: ${otp}\n--------------------------------------------\n`);
-    }
+  try {
+    await sendEmail({
+      email,
+      subject: 'Reset your EMS account password',
+      message: htmlContent,
+    });
+  } catch (error) {
+    console.log(
+      `\n--- [DEVELOPMENT FALLBACK RESET OTP LOG] ---\nRecipient: ${email} (${name})\nOTP Code: ${otp}\n--------------------------------------------\n`
+    );
+  }
 };

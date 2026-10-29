@@ -351,13 +351,51 @@ export const updateEmployee = async (req, res) => {
       message: 'Employee updated successfully',
       employee: updatedEmployee,
     });
-  } catch (error) {
+  } catch (e) {
     if (newProfileImageUrl) {
       await deleteFromImageKit(newProfileImageUrl).catch((err) =>
         console.error('ImageKit rollback failed:', err)
       );
     }
-    console.error('Error in updateEmployee:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error('Error in updateEmployee:', e);
+    return res.status(500).json({ success: false, message: e.message });
+  }
+};
+
+// to delete an employee
+export const deleteEmployee = async (req, res) => {
+  try {
+    const employee = await Employee.findById(request.params.id);
+
+    if (!employee) {
+      return res.status(404).json({
+        success: false,
+        message: 'Employee not found',
+      });
+    }
+
+    await Employee.findByIdAndDelete(req.params.id);
+
+    if (employee.workEmail) {
+      await User.findOneAndDelete({
+        email: employee.workEmail,
+      });
+    }
+
+    // to remove image
+    if (employee.profileImage) {
+      await deleteFromImageKit(employee.profileImage).catch((err) =>
+        console.error('Failed to delete profile image from ImageKit:', err)
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Employee deleted successfully',
+      employee,
+    });
+  } catch (e) {
+    console.error('Error in deleteEmployee:', e);
+    return res.status(500).json({ success: false, message: e.message });
   }
 };

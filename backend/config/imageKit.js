@@ -8,7 +8,7 @@ const imageKit = new ImageKit({
 });
 
 // to upload image
-export const updateToImageKit = async (fileInput, fileName) => {
+export const uploadToImageKit = async (fileInput, fileName) => {
   try {
     let file;
 
@@ -35,13 +35,13 @@ export const deleteToImageKit = async (url) => {
       return null;
     }
 
-    const fileName = url.substring((url.lastIndexOf('/') + 1));
+    const fileName = url.substring(url.lastIndexOf('/') + 1);
 
     if (!fileName) return null;
 
     const files = await imageKit.assets.list({
       searchQuery: `name = ${fileName}`,
-    })
+    });
 
     if (files && files.length > 0) {
       const fileId = files[0].fileId;

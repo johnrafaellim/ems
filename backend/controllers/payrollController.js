@@ -143,7 +143,7 @@ export const createPayroll = async (req, res) => {
 };
 
 // to get payroll records(admin can fetch all, while employee see their own)
-export const getPayrolls = async (req, res) => {
+export const getPayroll = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
 

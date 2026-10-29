@@ -10,7 +10,7 @@ export const verifyToken = async (req, res, next) => {
       });
     }
 
-    const actualToken = token.startWith('Bearer ')
+    const actualToken = token.startsWith('Bearer ')
       ? token.split(' ')[1]
       : token;
 

@@ -14,7 +14,7 @@ const upload = multer({
   storage: multer.memoryStorage({}),
 });
 
-employeeRouter.get(
+employeeRouter.post(
   '/',
   verifyToken,
   isAdmin,

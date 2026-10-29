@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import { connectDB } from './config/db.js';
 import authRouter from './routes/authRoutes.js';
+import employeeRouter from './routes/employeeRoutes.js';
 
 const PORT = 8000;
 const app = express();
@@ -17,6 +18,7 @@ connectDB();
 
 // routes
 app.use('/api/auth', authRouter);
+app.use('/api/employee', employeeRouter);
 
 app.get('/', (req, res) => {
   res.send('API WORKING');

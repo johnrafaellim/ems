@@ -6,6 +6,7 @@ import authRouter from './routes/authRoutes.js';
 import employeeRouter from './routes/employeeRoutes.js';
 import payrollRouter from './routes/payrollRoutes.js';
 import leaveRouter from './routes/leaveRoutes.js';
+import attendanceRouter from './routes/attendanceRoutes.js';
 
 const PORT = 8000;
 const app = express();
@@ -23,6 +24,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/employee', employeeRouter);
 app.use('/api/payroll', payrollRouter);
 app.use('/api/leave', leaveRouter);
+app.use('/api/attendance', attendanceRouter);
 
 app.get('/', (req, res) => {
   res.send('API WORKING');
